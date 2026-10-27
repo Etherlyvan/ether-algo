@@ -1,0 +1,36 @@
+# Local roadmap and planning notes (case-insensitive)
+*[Rr][Oo][Aa][Dd][Mm][Aa][Pp]*
+*[Pp][Ll][Aa][Nn].md
+
+# AI assistant instructions and local notes
+AGENTS.md
+AGENTS.local.md
+CLAUDE.md
+GEMINI.md
+AI_NOTES.md
+ai-notes/
+ai_notes/
+.ai/
+.claude/
+.codex/
+.cursor/
+.github/copilot-instructions.md
+.github/instructions/
+
+# Dependencies and generated output
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Local environment and logs
+.env
+.env.*
+!.env.example
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+codex-notes/
