@@ -14,7 +14,7 @@ Tulis implementasinya. Uji batasnya. Jelaskan cara kerjanya.
 
 Setiap modul di project ini ditujukan untuk melatih tiga hal: logika implementasi, pengujian perilaku, dan analisis kompleksitas waktu serta ruang. Perjalanan dimulai dari array, kemudian berlanjut ke stack, queue, searching, dan sorting.
 
-**Status: pengembangan awal.** Implementasi yang tersedia saat ini adalah `reverseArray`, beserta unit test. Modul lainnya masih direncanakan.
+**Status: pengembangan awal.** Implementasi yang tersedia saat ini adalah `reverseArray` dan `findMax`, beserta unit test. Modul lainnya masih direncanakan.
 
 ## Boot up
 
@@ -67,6 +67,18 @@ Ekstensi `.js` pada import mengikuti konfigurasi TypeScript `NodeNext`; source y
 
 Kompleksitas: **O(n) waktu**, **O(n) ruang hasil**, dan **O(1) ruang tambahan di luar hasil**. Implementasi mengasumsikan array tanpa slot kosong.
 
+## Find the maximum
+
+```ts
+import { findMax } from "./src/arrays/find-max.js";
+
+findMax([3, 8, 2]);    // 8
+findMax([-5, -2, -8]); // -2
+findMax([]);          // undefined
+```
+
+Fungsi membaca input sekali tanpa mengubahnya: **O(n) waktu** dan **O(1) ruang tambahan**. Input diasumsikan berisi angka finite tanpa slot kosong. Detail analisis tersedia di [catatan kompleksitas](docs/complexity.md).
+
 ## Trust the checks
 
 Test memeriksa urutan hasil, input kosong, satu elemen, serta memastikan input tidak berubah dan hasil memiliki reference array yang berbeda.
@@ -96,10 +108,12 @@ Script `npm run example` sudah disiapkan untuk `examples/basics.ts`. File contoh
 ```text
 src/
 └── arrays/
-    └── reverse-array.ts        # Implementasi utama
+    ├── reverse-array.ts        # Membalik array
+    └── find-max.ts             # Mencari angka terbesar
 tests/
 └── arrays/
-    └── reverse-array.test.ts   # Pemeriksaan perilaku
+    ├── reverse-array.test.ts   # Pemeriksaan reverseArray
+    └── find-max.test.ts        # Pemeriksaan findMax
 tsconfig.json                  # Typecheck source, test, dan contoh
 tsconfig.build.json            # Build source ke dist/
 ```
@@ -107,7 +121,7 @@ tsconfig.build.json            # Build source ke dist/
 ## Next in the pit
 
 - [x] Reverse array dan unit test
-- [ ] Find maximum
+- [x] Find maximum
 - [ ] Stack berbasis array
 - [ ] Queue berbasis linked nodes
 - [ ] Linear search dan binary search
