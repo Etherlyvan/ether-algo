@@ -1,8 +1,8 @@
 {
   "name": "ether-algo",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Data structures and algorithms built from scratch with TypeScript and Vitest",
+  "main": "dist/index.js",
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
@@ -19,5 +19,7 @@
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vitest": "^5.0.5"
-  }
+  },
+  "types": "dist/index.d.ts",
+  "private": true
 }

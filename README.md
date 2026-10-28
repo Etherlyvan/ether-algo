@@ -1,4 +1,4 @@
-# ETHER-ALGO
+﻿# ETHER-ALGO
 
 **BUILD IT. BREAK IT. UNDERSTAND IT.**
 
@@ -6,137 +6,152 @@ Struktur data dan algoritma, dibangun dari dasar dengan TypeScript. Tempat membo
 
 `[ TYPESCRIPT // VITEST // LEARNING IN PUBLIC ]`
 
-Bagian pertama dari [Engineering Journey — @etherlyvan](https://github.com/Etherlyvan).
+Bagian dari perjalanan engineering [@etherlyvan](https://github.com/Etherlyvan).
 
 ## The mission
 
 Tulis implementasinya. Uji batasnya. Jelaskan cara kerjanya.
 
-Setiap modul di project ini ditujukan untuk melatih tiga hal: logika implementasi, pengujian perilaku, dan analisis kompleksitas waktu serta ruang. Perjalanan dimulai dari array, kemudian berlanjut ke stack, queue, searching, dan sorting.
-
-**Status: pengembangan awal.** Implementasi yang tersedia saat ini adalah `reverseArray` dan `findMax`, beserta unit test. Modul lainnya masih direncanakan.
+Scope awal telah diimplementasikan: arrays, stack, queue, searching, dan sorting. Project dijalankan melalui terminal dan ditujukan untuk belajar. Workflow CI tersedia; hasil remote mengikuti run GitHub Actions setelah perubahan di-push.
 
 ## Boot up
 
-Siapkan Node.js dan npm yang kompatibel dengan dependency di `package-lock.json`.
+Gunakan **Node.js 24.13.1** dan npm. Versi Node lokal dan CI dicatat di `.nvmrc`. Jika memakai nvm yang mendukung file tersebut, jalankan `nvm use`.
 
 ```bash
 git clone https://github.com/Etherlyvan/ether-algo.git
 cd ether-algo
 npm ci
-```
-
-Jalankan pemeriksaan project:
-
-```bash
-npm test
 npm run typecheck
+npm test
 npm run build
+npm run example
 ```
 
-Build menghasilkan JavaScript dan deklarasi tipe di `dist/`.
+Build menghasilkan JavaScript dan deklarasi tipe di `dist/`. Package ditandai private untuk mencegah publikasi npm yang tidak disengaja.
 
-## First cut: reverse array
+## Plug in
 
-`reverseArray` membaca array dari belakang dan mengembalikan array baru. Input tetap utuh.
+Semua API tersedia melalui `src/index.ts`. Contoh berikut dapat disimpan sebagai `examples/demo.ts` dan dijalankan dengan `npx tsx examples/demo.ts`.
 
 ```ts
-import { reverseArray } from "./src/arrays/reverse-array.js";
+import {
+  reverseArray, findMax, Stack, Queue,
+  linearSearch, binarySearch,
+  bubbleSort, insertionSort, mergeSort,
+} from "../src/index.js";
 
-const input = [1, 2, 3];
-const result = reverseArray(input);
+reverseArray([1, 2, 3]); // [3, 2, 1]
+findMax([-5, -2, -8]);  // -2
+findMax([]);            // undefined
 
-console.log(result); // [3, 2, 1]
-console.log(input);  // [1, 2, 3]
+const stack = new Stack<string>();
+stack.push("first");
+stack.push("second");
+stack.peek(); // "second", tidak dihapus
+stack.pop();  // "second" — LIFO
+stack.size;   // 1
+
+const queue = new Queue<string>();
+queue.enqueue("first");
+queue.enqueue("second");
+queue.dequeue(); // "first" — FIFO
+queue.isEmpty(); // false
+
+linearSearch([3, 1, 2], 1); // 1
+binarySearch([1, 2, 3], 2); // 1; input harus ascending
+bubbleSort([3, 1, 2]);      // [1, 2, 3]
+insertionSort([3, 1, 2]);   // [1, 2, 3]
+mergeSort([3, 1, 2]);       // [1, 2, 3]
 ```
 
-Untuk mencoba contoh tersebut, simpan sebagai `demo.ts` di root project, lalu jalankan:
+Ekstensi `.js` pada import mengikuti konfigurasi TypeScript NodeNext; file source tetap `.ts`.
 
-```bash
-npx tsx demo.ts
+`npm run example` menjalankan contoh lengkap yang sudah tersedia:
+
+```text
+Input: [ 3, 1, 2 ]
+Reverse: [ 2, 1, 3 ]
+Maximum: 3
+Stack pop (LIFO): second
+Queue dequeue (FIFO): first
+Linear search index of 1: 1
+Binary search index of 2: 1
+Bubble sort: [ 1, 2, 3 ]
+Insertion sort: [ 1, 2, 3 ]
+Merge sort: [ 1, 2, 3 ]
+Original input: [ 3, 1, 2 ]
 ```
 
-Ekstensi `.js` pada import mengikuti konfigurasi TypeScript `NodeNext`; source yang ditulis tetap berupa file `.ts`.
+## Know the contract
 
-| Perilaku | Hasil |
-|---|---|
-| `[1, 2, 3]` | `[3, 2, 1]` |
-| `[]` | Array kosong baru |
-| `["a"]` | `["a"]` dalam array baru |
-| Elemen berupa object | Reference object dipertahankan; tidak dilakukan deep clone |
+- Reverse dan sorting mengembalikan array baru tanpa mengubah input; object reference tidak di-deep-copy.
+- Fungsi numerik mengasumsikan angka finite dan array tanpa slot kosong; tidak melakukan validasi runtime.
+- Stack menyediakan push/pop; queue menyediakan enqueue/dequeue. Keduanya memiliki peek, getter size, dan isEmpty(). Penambahan mengembalikan void.
+- Pembacaan/penghapusan koleksi kosong menghasilkan undefined. Jika menyimpan undefined, gunakan size atau isEmpty untuk membedakannya dari koleksi kosong.
+- Searching menghasilkan index atau -1. Untuk duplikat, salah satu index yang cocok dapat dikembalikan.
+- Binary search memerlukan input ascending tanpa validasi urutan otomatis.
+- Sorting angka ascending belum mendukung comparator generic.
 
-Kompleksitas: **O(n) waktu**, **O(n) ruang hasil**, dan **O(1) ruang tambahan di luar hasil**. Implementasi mengasumsikan array tanpa slot kosong.
+## Count the cost
 
-## Find the maximum
+| Modul / operasi | Waktu | Ruang |
+|---|---|---|
+| Reverse array | O(n) | O(n) hasil, O(1) tambahan |
+| Find maximum | O(n) | O(1) |
+| Stack push | O(1) amortized | O(n) penyimpanan stack |
+| Stack pop / peek / size / isEmpty | O(1) | O(1) tambahan |
+| Queue enqueue / dequeue / peek / size / isEmpty | O(1) | O(n) penyimpanan queue |
+| Linear search | O(n) worst case | O(1) |
+| Binary search | O(log n) worst case | O(1) |
+| Bubble / insertion sort | O(n²) worst case, O(n) best case | O(n) hasil, O(1) tambahan |
+| Merge sort | O(n log n) | O(n) hasil dan O(n) tambahan |
 
-```ts
-import { findMax } from "./src/arrays/find-max.js";
-
-findMax([3, 8, 2]);    // 8
-findMax([-5, -2, -8]); // -2
-findMax([]);          // undefined
-```
-
-Fungsi membaca input sekali tanpa mengubahnya: **O(n) waktu** dan **O(1) ruang tambahan**. Input diasumsikan berisi angka finite tanpa slot kosong. Detail analisis tersedia di [catatan kompleksitas](docs/complexity.md).
+Baca [analisis kompleksitas](docs/complexity.md) dan [catatan pembelajaran](docs/learning-notes.md) untuk alasan, invariant, stabilitas sorting, dan batas analisis ruang.
 
 ## Trust the checks
 
-Test memeriksa urutan hasil, input kosong, satu elemen, serta memastikan input tidak berubah dan hasil memiliki reference array yang berbeda.
-
 ```bash
-# Seluruh test, sekali jalan
 npm test
-
-# Test reverseArray saja
-npm test -- tests/arrays/reverse-array.test.ts
-
-# Jalankan ulang test saat kode berubah
+npm test -- tests/data-structures/queue.test.ts
 npm run test:watch
 ```
 
+Test mencakup input kosong, satu elemen, negatif, duplikat, larangan mutasi, object reference, LIFO/FIFO, ukuran, pengisian ulang koleksi, batas pencarian, dan hasil sorting terhadap pembanding numerik. Kasus bervariasi menggunakan seed tetap agar dapat direproduksi.
+
 | Command | Fungsi |
 |---|---|
-| `npm test` | Menjalankan unit test dengan Vitest |
-| `npm run test:watch` | Menjalankan test dalam watch mode |
-| `npm run typecheck` | Memeriksa tipe tanpa menghasilkan file |
-| `npm run build` | Mengompilasi `src/` ke `dist/` |
+| npm test | Menjalankan seluruh unit test sekali |
+| npm run test:watch | Mengulang test saat file berubah |
+| npm run typecheck | Memeriksa source, test, dan contoh tanpa emit |
+| npm run build | Mengompilasi src ke dist beserta deklarasi tipe |
+| npm run example | Menjalankan examples/basics.ts |
 
-Script `npm run example` sudah disiapkan untuk `examples/basics.ts`. File contoh tersebut belum tersedia.
+GitHub Actions menjalankan instalasi bersih, typecheck, test, build, dan contoh pada push serta pull request.
 
 ## Inside the repo
 
 ```text
 src/
-└── arrays/
-    ├── reverse-array.ts        # Membalik array
-    └── find-max.ts             # Mencari angka terbesar
-tests/
-└── arrays/
-    ├── reverse-array.test.ts   # Pemeriksaan reverseArray
-    └── find-max.test.ts        # Pemeriksaan findMax
-tsconfig.json                  # Typecheck source, test, dan contoh
-tsconfig.build.json            # Build source ke dist/
+├── arrays/             # reverseArray, findMax
+├── data-structures/    # Stack, Queue
+├── searching/          # Linear dan binary search
+├── sorting/            # Bubble, insertion, merge sort
+└── index.ts            # Export publik
+ tests/                 # Unit test per kelompok modul
+ examples/basics.ts     # Contoh semua API
+ docs/                  # Kompleksitas dan pembelajaran
+ .github/workflows/     # CI
 ```
-
-## Next in the pit
-
-- [x] Reverse array dan unit test
-- [x] Find maximum
-- [ ] Stack berbasis array
-- [ ] Queue berbasis linked nodes
-- [ ] Linear search dan binary search
-- [ ] Bubble sort, insertion sort, dan merge sort
-- [ ] Contoh penggunaan, dokumentasi kompleksitas, dan CI
-
-Scope awal berfokus pada implementasi dasar yang dapat dipahami dan dijelaskan. Comparator generic untuk sorting, tree, graph, benchmark, dan publikasi npm menjadi pengembangan berikutnya.
 
 ## Working rules
 
-- Implementasikan algoritma sendiri; pahami setiap langkahnya.
-- Uji kasus normal dan kasus batas.
-- Jelaskan kompleksitas berdasarkan kode yang benar-benar berjalan.
-- Simpan catatan pembelajaran yang berguna untuk pembaca bersama dokumentasi project.
+- Implementasikan algoritma sendiri dan pahami setiap langkahnya.
+- Uji perilaku dan kasus batas.
+- Jelaskan kompleksitas berdasarkan kode yang berjalan.
 - Selesaikan satu modul sebelum memperluas scope.
+
+Tree, graph, comparator generic, benchmark, dan publikasi npm berada di luar scope awal. Metadata package saat ini mencantumkan ISC; file LICENSE belum ditambahkan.
 
 ---
 
